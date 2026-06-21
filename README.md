@@ -91,7 +91,11 @@ EasyEDA(또는 KiCad)에서 바로 회로를 그릴 수 있도록 아래를 제�
 | [`docs/07-layout-mechanical.md`](docs/07-layout-mechanical.md) | 외곽·확장 방향 제약 |
 | [`hardware/netlist.md`](hardware/netlist.md) | **전체 결선표 (net 단위)** |
 | [`hardware/bom.csv`](hardware/bom.csv) | BOM (LCSC 부품번호) |
+| [`kicad/README.md`](kicad/README.md) | **열리는 KiCad 프로젝트** (45부품, 글로벌라벨 결선) |
 | [`easyeda/README.md`](easyeda/README.md) | EasyEDA 임포트/작도 방법 |
+
+> **바로 열리는 EDA 파일이 필요하면** → [`kicad/rp2040w-bat.kicad_pro`](kicad/) (KiCad 7/8/9).
+> 자가검증(문법·오연결0·핀↔라벨일치) 통과. 단, 풋프린트·복잡IC 핀번호·RF는 여신 뒤 확인 필요.
 
 ---
 

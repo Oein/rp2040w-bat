@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "rp2040w_bat")(type "KiCad")(uri "${KIPRJMOD}/rp2040w_bat.kicad_sym")(options "")(descr "RP2040W-BAT project symbols"))
+)

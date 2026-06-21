@@ -1,0 +1,7 @@
+{
+  "board": {"design_settings": {}},
+  "meta": {"filename": "rp2040w-bat.kicad_pro", "version": 1},
+  "schematic": {},
+  "sheets": [],
+  "libraries": {"pinned_footprint_libs": [], "pinned_symbol_libs": []}
+}
