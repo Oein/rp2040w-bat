@@ -1,3 +1,3 @@
-*.eprj2
-*.eprj
+# 작업용 임시 복사본만 제외 (산출물 RP2040W-BAT.eprj2 는 git에 추적)
 work-copy.eprj2
+work-copy.eprj
