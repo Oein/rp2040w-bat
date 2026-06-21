@@ -35,6 +35,26 @@ EasyEDA를 띄워 렌더 검증은 못 하므로(블라인드 편집), 아래는
 3. ERC → 핀맵 대조(`../docs/01-pin-compat.md`).
 4. PCB는 비어 있음 → 부품 가져오기 후 레이아웃(`../docs/07-layout-mechanical.md`: 확장은 USB측으로만).
 
+## ⛔ 중요한 한계 발견 — 평문 편집은 임포트에서 살아남지 못함
+EasyEDA Pro는 프로젝트의 **정본(보드 목록 포함)을 암호화된 history 스냅샷**(`history_data`,
+`branches.main`의 head 커밋)에 저장한다. `.eprj2`를 임포트하면 그 **head 커밋을 체크아웃**해
+프로젝트를 재구성하므로, 내가 평문으로 추가한 `documents/schematics/project_structures`는
+**덮어쓰여 사라진다.**
+
+근거:
+- 트리에 보이는 `alpha-rev4/rev5` 보드는 평문 `documents`가 **하나도 없음** → 트리는 평문이 아니라
+  **history(암호화)** 에서 그려진다.
+- `history_data.dataStr` 엔트로피 = **8.00 bit/byte (AES 암호화)**, `key`/`iv` 컬럼 존재.
+- 키가 파일에 없어(계정/프로젝트 종속) **암호화 커밋 위조 불가**.
+
+→ 결론: **이 .eprj2를 평문 편집해 보드를 추가하는 방식은 데스크톱 임포트에서 동작하지 않는다.**
+
+### 신뢰성 있는 대안
+1. **KiCad 프로젝트를 EasyEDA Pro로 임포트** (`File → Import → KiCad`, `../kicad/`).
+   → 깨끗한 네이티브 EasyEDA Pro 프로젝트가 정상 history와 함께 생성됨. (권장)
+2. EasyEDA Pro에서 **직접 New Board** 후, `../hardware/netlist.md` + `../hardware/bom.csv` 로
+   부품 배치/배선. (몇 분, 100% 신뢰)
+
 ## 안전장치
 - **원본 업로드 파일은 절대 수정하지 않음**(읽기 전용으로 복사해 작업).
 - 대용량/타프로젝트 바이너리(`*.eprj2`)는 git에 커밋하지 않음(.gitignore). 산출물은 별도 전달.
