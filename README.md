@@ -89,6 +89,7 @@ EasyEDA(또는 KiCad)에서 바로 회로를 그릴 수 있도록 아래를 제�
 | [`docs/05-power-logic.md`](docs/05-power-logic.md) | 전원 온/오프/ship/슬립 로직 |
 | [`docs/06-keyboard-matrix.md`](docs/06-keyboard-matrix.md) | 키 매트릭스·다이오드·웨이크 |
 | [`docs/07-layout-mechanical.md`](docs/07-layout-mechanical.md) | 외곽·확장 방향 제약 |
+| [`docs/08-easyeda-manual-build.md`](docs/08-easyeda-manual-build.md) | **EasyEDA Pro 수동 작업 가이드** (배터리/충전부 추가) |
 | [`hardware/netlist.md`](hardware/netlist.md) | **전체 결선표 (net 단위)** |
 | [`hardware/bom.csv`](hardware/bom.csv) | BOM (LCSC 부품번호) |
 | [`kicad/README.md`](kicad/README.md) | **열리는 KiCad 프로젝트** (45부품, 글로벌라벨 결선) |
