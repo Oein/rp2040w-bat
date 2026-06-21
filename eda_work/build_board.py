@@ -90,16 +90,19 @@ boards = json.loads(c.execute("SELECT boards FROM projects").fetchone()[0])
 boards.append({"sch":S,"name":"RP2040W-BAT","pcb":PCB})
 c.execute("UPDATE projects SET boards=? WHERE uuid=?", (json.dumps(boards), PROJ))
 
-# ── 6) project_structures 에도 추가(트리 표시용; 모든 동일 행 갱신) ──
+# ── 6) project_structures: EasyEDA Pro 데스크톱은 이 JSON으로 보드 트리를 그린다.
+#     보드 1개 = boards + schematics + sheets + pcbs 4개 섹션을 모두 일관되게 채워야 노드가 뜬다.
+#     alpha-rev2 패턴(보드uuid=16hex, sch=schematics.uuid, sheet=시트문서uuid, pcb=PCB문서uuid)을 그대로 미러.
 BID  = uuid.uuid4().hex[:16]
-SHID = uuid.uuid4().hex[:16]
+ver  = str(now*1000)
 rows = c.execute("SELECT id,structure FROM project_structures").fetchall()
 for rid, st in rows:
     obj=json.loads(st)
     zb = max([b.get("zIndex",0) for b in obj.get("boards",{}).values()] or [0])+1
     obj.setdefault("boards",{})[BID]={"uuid":BID,"title":"RP2040W-BAT","zIndex":zb}
-    obj.setdefault("schematics",{})[S]={"uuid":S,"name":"RP2040W-BAT","board":BID,"source":"","version":str(now*1000),"updateTime":now*1000}
-    obj.setdefault("sheets",{})[SHID]={"uuid":SHID,"title":"P1","schematic_uuid":S,"zIndex":1,"source":"","version":str(now*1000),"updateTime":now*1000}
+    obj.setdefault("schematics",{})[S]={"uuid":S,"name":"RP2040W-BAT","board":BID,"source":"","version":ver,"updateTime":now*1000}
+    obj.setdefault("sheets",{})[DOC]={"uuid":DOC,"title":"P1","schematic_uuid":S,"zIndex":1,"source":"","version":ver,"updateTime":now*1000}
+    obj.setdefault("pcbs",{})[PCB]={"uuid":PCB,"title":"PCB5","board":BID,"parent_uuid":"","source":"","version":ver,"updateTime":now*1000}
     c.execute("UPDATE project_structures SET structure=? WHERE id=?", (json.dumps(obj, ensure_ascii=False), rid))
 
 db.commit()
@@ -119,8 +122,14 @@ allsch={r[0] for r in c.execute("SELECT uuid FROM schematics")}
 alldoc={r[0] for r in c.execute("SELECT uuid FROM documents")}
 ok=all(b["sch"] in allsch and b["pcb"] in alldoc for b in boards)
 print("boards JSON refs resolve:", ok, "| total boards:", len(boards))
-# JSON 유효성
-for rid,st in c.execute("SELECT id,structure FROM project_structures").fetchall()[:1]:
-    json.loads(st); print("structure JSON valid (sample row", rid, ")")
+# structure 트리 정합성: 보드 노드가 sch/sheet/pcb 와 일관되게 연결됐는지
+st=json.loads(c.execute("SELECT structure FROM project_structures LIMIT 1").fetchone()[0])
+board_ok = BID in st["boards"]
+sch_ok   = S in st["schematics"] and st["schematics"][S]["board"]==BID
+sheet_ok = DOC in st["sheets"] and st["sheets"][DOC]["schematic_uuid"]==S
+pcb_ok   = PCB in st["pcbs"] and st["pcbs"][PCB]["board"]==BID
+print("structure 트리 정합성  board:%s sch:%s sheet:%s pcb:%s"%(board_ok,sch_ok,sheet_ok,pcb_ok))
+print("structure 총 보드 수:", len(st["boards"]))
 db.close()
+assert board_ok and sch_ok and sheet_ok and pcb_ok, "structure 항목 불일치!"
 print("OUT:", OUT, os.path.getsize(OUT), "bytes")
